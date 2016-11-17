@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity
     Intent i;
     Button buttonStart, buttonGra, buttonAcc, buttonLinear, buttonGyr ;
 
-    float[] acc, gyr, oldAcc, oldGyr, gravity,sideY,sideX, oldGravity;
+    float[] acc, gyr, oldAcc, oldGyr, gravity,sideY,sideX, oldGravity, rotatedGyr;
     float[][] rotation, resultOfDynamic;
     boolean start;
 
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity
     Orientation orientation;
     DynamicAcceleration dynamic;
     int counter;
+    float omega_z;
 
 
     @Override
@@ -72,12 +73,14 @@ public class MainActivity extends AppCompatActivity
         sideX = new float[3];
         sideY = new float[3];
         rotation = null;
+        rotatedGyr = new float[3];
         resultOfDynamic = new float[5][3];
 
         g = new Gravity();
         orientation = new Orientation();
         dynamic = new DynamicAcceleration();
         counter=0;
+        omega_z =0;
 
         arrowView.setLine(0,100,0);
         sideYView.setLine(0,100,0);
@@ -190,10 +193,13 @@ public class MainActivity extends AppCompatActivity
 //                        g.printGravity(gravity);
 //                        orientation.printRotation(rotation);
                         rotation = orientation.rotationFromGravity(gravity);
-                        rotation = orientation.updateRotationMatrix(rotation, orientation.rotatedGyr(gyr,rotation),dynamic.getDeltaT());
+                        rotatedGyr = orientation.rotatedGyr(gyr,rotation);
+                        rotation = orientation.updateRotationMatrix(rotation, rotatedGyr,dynamic.getDeltaT());
                         gravity = g.gravityAfterRotation(rotation);
                         sideX = g.sideXAfterRotation(rotation);
                         sideY = g.sideYAfterRotation(rotation);
+
+                        omega_z += rotatedGyr[2]*dynamic.getDeltaT();
 //                        orientation.setRotationMatrix(rotation);
 //                        System.out.println("after");
 //                        g.printGravity(gravity);
@@ -208,7 +214,7 @@ public class MainActivity extends AppCompatActivity
                     int lS = 20; // size coefficient of the line
                     arrowView.setLine((-1)*gravity[0]*lS,gravity[1]*lS,gravity[2]*lS);
                     sideYView.setLine((-1)*sideY[0]*lS,sideY[1]*lS, sideY[2]*lS);
-                    sideXView.setLine((-1)*sideX[0]*lS,sideX[1]*lS, sideX[2]*lS);
+                    sideXView.setLine((-1)*omega_z*lS*10,0, 0);
                     gyrView.setLine(gyr[1]*lS,gyr[0]*lS, -1*gyr[2]*lS);
 
                     System.out.println(acc[0]+", "+acc[1]+", "+acc[2]+", "+gyr[0]+", "+gyr[1]+", "+gyr[2]+", "+gravity[0]+", "+gravity[1]+", "+gravity[2]+", ");
