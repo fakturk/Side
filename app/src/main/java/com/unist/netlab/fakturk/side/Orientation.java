@@ -187,6 +187,30 @@ public class Orientation
 
 
     }
+    float[][] updateRotationAfterOmegaZ(float[][] R, float omega_z)
+
+    {
+        float[][] newRotation = new float[3][3];
+        float c = (float) Math.cos(omega_z);
+        float s = (float) Math.sin(omega_z);
+        newRotation[0][0] = c*R[0][0]-s*R[1][0];
+        newRotation[0][1] = c*R[0][1]-s*R[1][1];
+        newRotation[0][2] = c*R[0][2]-s*R[1][2];
+
+        newRotation[1][0] = s*R[0][0]+c*R[1][0];
+        newRotation[1][1] = s*R[0][1]+c*R[1][1];
+        newRotation[1][2] = s*R[0][2]+c*R[1][2];
+
+        newRotation[2][0] = R[2][0];
+        newRotation[2][1] = R[2][1];
+        newRotation[2][2] = R[2][2];
+
+        setRotationMatrix(newRotation);
+//        printRotation(newRotation);
+
+        return newRotation;
+
+    }
 
     void printRotation(float[][]R)
     {

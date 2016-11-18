@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
     Orientation orientation;
     DynamicAcceleration dynamic;
     int counter;
-    float omega_z;
+    float omega_x,omega_y, omega_z;
 
 
     @Override
@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity
         orientation = new Orientation();
         dynamic = new DynamicAcceleration();
         counter=0;
+        omega_x =0;
+        omega_y =0;
         omega_z =0;
 
         arrowView.setLine(0,100,0);
@@ -193,13 +195,20 @@ public class MainActivity extends AppCompatActivity
 //                        g.printGravity(gravity);
 //                        orientation.printRotation(rotation);
                         rotation = orientation.rotationFromGravity(gravity);
+                        omega_x += rotatedGyr[0]*dynamic.getDeltaT();
+                        omega_y += rotatedGyr[1]*dynamic.getDeltaT();
+                        omega_z += rotatedGyr[2]*dynamic.getDeltaT();
+
                         rotatedGyr = orientation.rotatedGyr(gyr,rotation);
                         rotation = orientation.updateRotationMatrix(rotation, rotatedGyr,dynamic.getDeltaT());
+
                         gravity = g.gravityAfterRotation(rotation);
+
+                        rotation = orientation.updateRotationAfterOmegaZ(rotation,omega_z);
                         sideX = g.sideXAfterRotation(rotation);
                         sideY = g.sideYAfterRotation(rotation);
 
-                        omega_z += rotatedGyr[2]*dynamic.getDeltaT();
+
 //                        orientation.setRotationMatrix(rotation);
 //                        System.out.println("after");
 //                        g.printGravity(gravity);
@@ -213,7 +222,7 @@ public class MainActivity extends AppCompatActivity
                     //set views
                     int lS = 20; // size coefficient of the line
                     arrowView.setLine((-1)*gravity[0]*lS,gravity[1]*lS,gravity[2]*lS);
-                    sideYView.setLine((-1)*sideY[0]*lS,sideY[1]*lS, sideY[2]*lS);
+                    sideYView.setLine(sideY[0]*lS,sideY[1]*lS, sideY[2]*lS);
                     sideXView.setLine((-1)*omega_z*lS*10,0, 0);
                     gyrView.setLine(gyr[1]*lS,gyr[0]*lS, -1*gyr[2]*lS);
 

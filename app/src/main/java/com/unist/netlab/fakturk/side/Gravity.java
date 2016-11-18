@@ -51,7 +51,7 @@ public class Gravity
     float[] sideYAfterRotation( float[][] rotationMatrix)
     {
         float[] newSideY = new float[3];
-        float[] earth = new float[]{0,1,0};
+        float[] earth = new float[]{0,-1,0};
 
         for (int i = 0; i < 3; i++) {
             newSideY[i] = earth[1]* rotationMatrix[i][1]+ earth[1]* rotationMatrix[i][1]+earth[1]* rotationMatrix[i][1];
